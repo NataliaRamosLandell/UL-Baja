@@ -1,0 +1,40 @@
+{
+  "agency_name": "Quattro Marketing",
+  "client_name": "UL Baja",
+  "account_ids": [
+    "act_1782240946059771"
+  ],
+  "projects": [
+    {
+      "name": "The Park",
+      "keywords": [
+        "the park",
+        "park"
+      ]
+    },
+    {
+      "name": "Torre Corporativa Eugenia",
+      "keywords": [
+        "eugenia",
+        "torre"
+      ]
+    },
+    {
+      "name": "Hi TJ",
+      "keywords": [
+        "hi tj",
+        "hitj",
+        "hi-tj",
+        "hi_tj"
+      ]
+    }
+  ],
+  "since": "2026-01-01",
+  "until": "today",
+  "period_label": "2026",
+  "show_campaign_breakdown": true,
+  "top_ads_per_campaign": true,
+  "output_dir": "docs",
+  "output_filename": "ul-baja.html",
+  "backfill_from": "2026-01-01"
+}

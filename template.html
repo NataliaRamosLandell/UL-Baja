@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Meta Ads — {{ client_name }}</title>
+<style>
+  :root{
+    --navy:#132A3E;
+    --navy-dark:#0D1E2F;
+    --red:#E15241;
+    --green:#1BAF7A;
+    --amber:#EDA100;
+    --cream:#FAFAF8;
+    --card:#F1F3F5;
+    --alert-bg:#FDECEA;
+    --alert-border:#F3C5BE;
+    --text-dark:#1B2A3B;
+    --text-muted:#63707D;
+    --border:#E2E8F0;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:Calibri,"Segoe UI",Arial,sans-serif;background:var(--cream);color:var(--text-dark);}
+  header{background:var(--navy-dark);color:#fff;padding:48px 40px;position:relative;overflow:hidden;}
+  header .brand{font-weight:bold;font-size:16px;letter-spacing:0.5px;margin-bottom:8px;}
+  header .dots{display:flex;gap:8px;margin-bottom:28px;}
+  header .dots span{width:12px;height:12px;border-radius:50%;background:var(--red);display:inline-block;}
+  header h1{font-family:Cambria,Georgia,serif;font-size:34px;margin:0 0 8px;max-width:700px;}
+  header p{font-size:15px;color:#CADCE8;margin:0;}
+  main{max-width:1200px;margin:0 auto;padding:32px 40px 60px;}
+  section{margin-bottom:44px;}
+  h2{font-family:Cambria,Georgia,serif;font-size:22px;color:var(--navy);margin:0 0 18px;}
+  h3{font-size:14px;font-weight:bold;color:var(--text-dark);margin:0 0 10px;}
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:8px;}
+  .kpi-card{background:var(--card);border-radius:10px;padding:16px 18px;}
+  .kpi-card .label{font-size:12px;color:var(--text-muted);margin-bottom:6px;}
+  .kpi-card .value{font-size:24px;font-weight:bold;color:var(--text-dark);}
+  .chart-card{background:#fff;border:0.5px solid var(--border);border-radius:10px;padding:18px 20px;}
+  .chart-wrap{position:relative;width:100%;}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .split{display:grid;grid-template-columns:1.5fr 1fr;gap:20px;}
+  .insight-box{background:var(--card);border-radius:10px;padding:20px 22px;}
+  .insight-box h3{font-family:Cambria,Georgia,serif;font-size:17px;color:var(--navy);margin-bottom:16px;}
+  .insight-box ul{margin:0;padding-left:18px;}
+  .insight-box li{font-size:13.5px;line-height:1.6;margin-bottom:12px;color:var(--text-dark);}
+  .alert-box{background:var(--alert-bg);border:0.5px solid var(--alert-border);border-radius:10px;padding:18px 20px;margin-bottom:20px;}
+  .alert-box .tag{display:inline-block;font-size:11px;font-weight:bold;color:#A32D2D;background:#F7C1C1;padding:3px 10px;border-radius:20px;margin-bottom:10px;}
+  .alert-box p{font-size:13.5px;line-height:1.6;margin:0;color:var(--text-dark);}
+  .caption{font-size:12px;font-style:italic;color:var(--text-muted);margin-top:10px;}
+  .legend{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:10px;font-size:12px;color:var(--text-muted);}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend i{width:10px;height:10px;border-radius:2px;display:inline-block;}
+  footer{text-align:center;padding:24px;font-size:12px;color:var(--text-muted);}
+  .ad-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;}
+  .ad-card{background:#fff;border:0.5px solid var(--border);border-radius:10px;padding:10px 10px 12px;display:flex;flex-direction:column;max-width:180px;}
+  .ad-thumb{width:100%;aspect-ratio:9/12;border-radius:8px;background:#E9ECEF;display:flex;align-items:center;justify-content:center;margin-bottom:8px;position:relative;overflow:hidden;}
+  .ad-thumb img{width:100%;height:100%;object-fit:cover;}
+  .ad-thumb .platform-tag{position:absolute;top:8px;left:8px;background:rgba(19,42,62,0.85);color:#fff;font-size:10px;font-weight:bold;padding:3px 8px;border-radius:20px;letter-spacing:0.3px;}
+  .ad-caption{font-size:11px;color:var(--text-dark);line-height:1.4;margin-bottom:8px;min-height:30px;}
+  .ad-stats{display:flex;gap:8px;flex-wrap:wrap;}
+  .ad-stat{background:var(--card);border-radius:6px;padding:6px 10px;flex:1;min-width:80px;}
+  .ad-stat .label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;}
+  .ad-stat .value{font-size:15px;font-weight:bold;color:var(--navy);}
+  .ad-stat.highlight{background:#FDECEA;}
+  .ad-stat.highlight .value{color:var(--red);}
+  .campaign-table{width:100%;border-collapse:collapse;}
+  .campaign-table th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:0.3px;color:var(--text-muted);padding:8px 12px;border-bottom:1px solid var(--border);}
+  .campaign-table td{padding:12px;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--text-dark);}
+  .campaign-table tr:last-child td{border-bottom:none;}
+  .obj-badge{display:inline-block;font-size:10.5px;font-weight:bold;padding:3px 10px;border-radius:20px;letter-spacing:0.2px;}
+  .obj-badge.whatsapp{background:#DCEFE7;color:#1BAF7A;}
+  .obj-badge.formulario{background:#FDECEA;color:#E15241;}
+  .obj-badge.reconocimiento{background:#E8ECF0;color:#132A3E;}
+  .obj-badge.otro{background:#F1F3F5;color:var(--text-muted);}
+  .obj-badge.llamadas{background:#FDF3D7;color:#B07A00;}
+  .proj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;}
+  .proj-card{background:#fff;border:0.5px solid var(--border);border-radius:10px;padding:18px 20px;border-top:4px solid var(--navy);}
+  .proj-card:nth-child(2){border-top-color:var(--red);}
+  .proj-card:nth-child(3){border-top-color:var(--green);}
+  .proj-card h3{font-family:Cambria,Georgia,serif;font-size:18px;color:var(--navy);margin-bottom:14px;}
+  .proj-card .kpi-grid{grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;}
+  .proj-card .kpi-card .value{font-size:19px;}
+  @media (max-width:800px){.two-col,.split{grid-template-columns:1fr;}header{padding:32px 20px;}main{padding:24px 20px 40px;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">{{ agency_name }}</div>
+  <div class="dots"><span></span><span></span><span></span><span></span></div>
+  <h1>Dashboard de resultados de marketing digital</h1>
+  <p>{{ client_name }} — {{ period_label }}</p>
+</header>
+
+<main>
+
+  <section>
+    <h2>Resumen ejecutivo</h2>
+    <p class="caption" style="margin-top:-10px;">Datos de {{ kpi_period_label }}.</p>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="label">Alcance</div><div class="value">{{ kpi_reach }}</div></div>
+      <div class="kpi-card"><div class="label">Costo</div><div class="value">{{ kpi_spend }}</div></div>
+      <div class="kpi-card"><div class="label">Whatsapps</div><div class="value">{{ kpi_whatsapp }}</div></div>
+      <div class="kpi-card"><div class="label">Formularios</div><div class="value">{{ kpi_leads }}</div></div>
+      {% if show_calls %}<div class="kpi-card"><div class="label">Llamadas</div><div class="value">{{ kpi_calls }}</div></div>{% endif %}
+      <div class="kpi-card"><div class="label">Costo x Whatsapp</div><div class="value">{{ kpi_cost_per_wa }}</div></div>
+      <div class="kpi-card"><div class="label">Costo x Formulario</div><div class="value">{{ kpi_cost_per_lead }}</div></div>
+      {% if show_calls %}<div class="kpi-card"><div class="label">Costo x Llamada</div><div class="value">{{ kpi_cost_per_call }}</div></div>{% endif %}
+      {% if show_recog %}<div class="kpi-card"><div class="label">Alcance reconocimiento</div><div class="value">{{ kpi_recog_reach }}</div></div>
+      <div class="kpi-card"><div class="label">Costo x 1,000 personas</div><div class="value">{{ kpi_cost_1000 }}</div></div>{% endif %}
+      <div class="kpi-card"><div class="label">Frecuencia prom.</div><div class="value">{{ kpi_frequency }}</div></div>
+    </div>
+    <p class="caption">Total de la cuenta ({{ project_names }}). Los costos por resultado se calculan con el gasto de las campañas de cada objetivo (whatsapp, formulario o reconocimiento), no con el gasto total de la cuenta.</p>
+  </section>
+
+  {% if show_projects %}
+  <section>
+    <h2>Resultados por proyecto</h2>
+    <p class="caption" style="margin-top:-8px;margin-bottom:16px;">Cada proyecto con sus propias campañas en {{ kpi_period_label }}.</p>
+    <div class="proj-grid">
+      {% for p in projects %}
+      <div class="proj-card">
+        <h3>{{ p.name }}</h3>
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="label">Inversión</div><div class="value">{{ p.spend }}</div></div>
+          <div class="kpi-card"><div class="label">Alcance</div><div class="value">{{ p.reach }}</div></div>
+          {% if p.show_wa %}<div class="kpi-card"><div class="label">Whatsapps</div><div class="value">{{ p.whatsapp }}</div></div>{% endif %}
+          {% if p.show_leads %}<div class="kpi-card"><div class="label">Formularios</div><div class="value">{{ p.leads }}</div></div>{% endif %}
+          {% if p.show_calls %}<div class="kpi-card"><div class="label">Llamadas</div><div class="value">{{ p.calls }}</div></div>{% endif %}
+          {% if p.show_wa %}<div class="kpi-card"><div class="label">Costo x Whatsapp</div><div class="value">{{ p.cost_wa }}</div></div>{% endif %}
+          {% if p.show_leads %}<div class="kpi-card"><div class="label">Costo x Formulario</div><div class="value">{{ p.cost_lead }}</div></div>{% endif %}
+          {% if p.show_calls %}<div class="kpi-card"><div class="label">Costo x Llamada</div><div class="value">{{ p.cost_call }}</div></div>{% endif %}
+          {% if p.show_recog %}<div class="kpi-card"><div class="label">Alcance reconocimiento</div><div class="value">{{ p.recog_reach }}</div></div>
+          <div class="kpi-card"><div class="label">Costo x 1,000 personas</div><div class="value">{{ p.cost_1000 }}</div></div>{% endif %}
+          <div class="kpi-card"><div class="label">Frecuencia</div><div class="value">{{ p.freq }}</div></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if alert_text %}
+  <div class="alert-box">
+    <span class="tag">{{ alert_tag }}</span>
+    <p>{{ alert_text }}</p>
+  </div>
+  {% endif %}
+
+  {% if campaigns_breakdown %}
+  <section>
+    <h2>Resultados por campaña</h2>
+    <p class="caption" style="margin-top:-8px;margin-bottom:16px;">KPI individual de cada campaña en {{ kpi_period_label }}, ordenadas por gasto. En las de reconocimiento el resultado son las personas alcanzadas y el costo es por cada 1,000 personas.</p>
+    <div class="chart-card" style="overflow-x:auto;">
+      <table class="campaign-table">
+        <thead>
+          <tr>
+            <th>Campaña</th>
+            <th>Proyecto</th>
+            <th>Objetivo</th>
+            <th>Alcance</th>
+            <th>Gasto</th>
+            <th>Resultados</th>
+            <th>Costo x resultado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in campaigns_breakdown %}
+          <tr>
+            <td>{{ c.name }}</td>
+            <td>{{ c.proyecto }}</td>
+            <td><span class="obj-badge {{ c.objetivo|lower }}">{{ c.objetivo }}</span></td>
+            <td>{{ c.reach }}</td>
+            <td>{{ c.spend }}</td>
+            <td>{{ c.resultado }}</td>
+            <td>{{ c.costo_resultado }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  {% endif %}
+
+  <section>
+    <h2>Histórico {{ period_label }}</h2>
+    <div class="chart-card">
+      <h3>Alcance mensual (personas)</h3>
+      <div class="legend"><span><i style="background:#E15241"></i>Alcance</span></div>
+      <div class="chart-wrap" style="height:280px;"><canvas id="reachChart"></canvas></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Inversión y generación de resultados</h2>
+    <div class="two-col">
+      <div class="chart-card">
+        <h3>Costo total vs frecuencia</h3>
+        <div class="legend">
+          <span><i style="background:#132A3E"></i>Costo (MXN)</span>
+          <span><i style="background:#E15241"></i>Frecuencia</span>
+        </div>
+        <div class="chart-wrap" style="height:280px;"><canvas id="costFreqChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Whatsapps, formularios y llamadas</h3>
+        <div class="legend">
+          <span><i style="background:#132A3E"></i>Whatsapps</span>
+          <span><i style="background:#E15241"></i>Formularios</span>
+          {% if show_calls_chart %}<span><i style="background:#EDA100"></i>Llamadas</span>{% endif %}
+        </div>
+        <div class="chart-wrap" style="height:280px;"><canvas id="leadsChart"></canvas></div>
+      </div>
+    </div>
+    {% if projects_legend %}
+    <div class="chart-card" style="margin-top:20px;">
+      <h3>Resultados por proyecto (whatsapps + formularios)</h3>
+      <div class="legend">
+        {% for s in projects_legend %}<span><i style="background:{{ s.backgroundColor }}"></i>{{ s.label }}</span>{% endfor %}
+      </div>
+      <div class="chart-wrap" style="height:280px;"><canvas id="projChart"></canvas></div>
+    </div>
+    {% endif %}
+  </section>
+
+  {% if top_ads_by_campaign %}
+  <section>
+    <h2>Top anuncio por campaña</h2>
+    <p class="caption" style="margin-top:-8px;margin-bottom:16px;">El anuncio con mejor resultado de cada campaña en {{ kpi_period_label }}, rankeado segun el objetivo de esa campaña (whatsapp, formulario o alcance). Se agrupan por proyecto.</p>
+    {% for camp in top_ads_by_campaign %}
+    <h3 style="margin-top:20px;margin-bottom:10px;">{{ camp.campaign_name }}</h3>
+    <div class="ad-grid">
+      {% for ad in camp.ads %}
+      <div class="ad-card">
+        <div class="ad-thumb">
+          <span class="platform-tag">{{ ad.format }}</span>
+          {% if ad.thumbnail_url %}<img src="{{ ad.thumbnail_url }}" alt="Creativo del anuncio">{% endif %}
+        </div>
+        <div class="ad-caption">{{ ad.name }}</div>
+        <div class="ad-stats">
+          {% if ad.objetivo == "Whatsapp" %}
+          <div class="ad-stat highlight"><div class="label">Whatsapps</div><div class="value">{{ ad.whatsapp }}</div></div>
+          {% elif ad.objetivo == "Formulario" %}
+          <div class="ad-stat highlight"><div class="label">Formularios</div><div class="value">{{ ad.leads }}</div></div>
+          {% elif ad.objetivo == "Llamadas" %}
+          <div class="ad-stat highlight"><div class="label">Llamadas</div><div class="value">{{ ad.calls }}</div></div>
+          {% endif %}
+          <div class="ad-stat"><div class="label">Alcance</div><div class="value">{{ ad.reach }}</div></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  <section>
+    <h2>Insights clave</h2>
+    <div class="insight-box">
+      <h3>Lecturas del mes</h3>
+      <ul>
+        {% for insight in insights %}
+        <li>{{ insight }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+{% if archive_url %}
+<div style="text-align:center;margin-bottom:20px;">
+  <a href="{{ archive_url }}" style="color:var(--red);font-size:13px;text-decoration:none;">Ver reportes de meses anteriores →</a>
+</div>
+{% endif %}
+<footer>{{ agency_name }} — generado automaticamente el {{ generated_date }}</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const months = {{ months_json }};
+const muted = '#63707D';
+const grid = '#E2E8F0';
+const NAVY = '#132A3E';
+const RED = '#E15241';
+
+const reach = {{ reach_json }};
+const cost = {{ cost_json }};
+const freq = {{ freq_json }};
+const wa = {{ whatsapp_json }};
+const form = {{ leads_json }};
+const calls = {{ calls_json }};
+
+Chart.defaults.font.family = "Calibri, 'Segoe UI', Arial, sans-serif";
+
+new Chart(document.getElementById('reachChart'), {
+  type: 'line',
+  data: { labels: months, datasets: [{ label:'Alcance', data:reach, borderColor:RED, backgroundColor:'rgba(225,82,65,0.08)', fill:true, tension:0.3, borderWidth:3, pointRadius:4, pointBackgroundColor:RED }]},
+  options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+    scales:{ y:{grid:{color:grid},ticks:{color:muted,callback:v=>v.toLocaleString()}}, x:{grid:{display:false},ticks:{color:muted}} } }
+});
+
+new Chart(document.getElementById('costFreqChart'), {
+  data: { labels:months, datasets:[
+    {type:'bar',label:'Costo',data:cost,backgroundColor:NAVY,borderRadius:4,yAxisID:'y'},
+    {type:'line',label:'Frecuencia',data:freq,borderColor:RED,backgroundColor:RED,borderWidth:3,tension:0.3,pointRadius:4,yAxisID:'y1'}
+  ]},
+  options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+    scales:{ y:{position:'left',grid:{color:grid},ticks:{color:muted,callback:v=>'$'+v.toLocaleString()}}, y1:{position:'right',grid:{display:false},ticks:{color:muted}}, x:{grid:{display:false},ticks:{color:muted}} } }
+});
+
+new Chart(document.getElementById('leadsChart'), {
+  type:'bar',
+  data:{ labels:months, datasets:[
+    {label:'Whatsapps',data:wa,backgroundColor:NAVY,borderRadius:4},
+    {label:'Formularios',data:form,backgroundColor:RED,borderRadius:4}
+  ].concat(calls.some(v=>v>0) ? [{label:'Llamadas',data:calls,backgroundColor:'#EDA100',borderRadius:4}] : [])},
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+    scales:{ y:{grid:{color:grid},ticks:{color:muted}}, x:{grid:{display:false},ticks:{color:muted}} } }
+});
+
+const projSeries = {{ projects_series_json }};
+if (document.getElementById('projChart')) {
+  new Chart(document.getElementById('projChart'), {
+    type:'bar',
+    data:{ labels:months, datasets:projSeries },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ y:{grid:{color:grid},ticks:{color:muted}}, x:{grid:{display:false},ticks:{color:muted}} } }
+  });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Meta Ads — UL Baja</title>
+<style>
+  :root{
+    --navy:#132A3E;
+    --navy-dark:#0D1E2F;
+    --red:#E15241;
+    --green:#1BAF7A;
+    --amber:#EDA100;
+    --cream:#FAFAF8;
+    --card:#F1F3F5;
+    --alert-bg:#FDECEA;
+    --alert-border:#F3C5BE;
+    --text-dark:#1B2A3B;
+    --text-muted:#63707D;
+    --border:#E2E8F0;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:Calibri,"Segoe UI",Arial,sans-serif;background:var(--cream);color:var(--text-dark);}
+  header{background:var(--navy-dark);color:#fff;padding:48px 40px;position:relative;overflow:hidden;}
+  header .brand{font-weight:bold;font-size:16px;letter-spacing:0.5px;margin-bottom:8px;}
+  header .dots{display:flex;gap:8px;margin-bottom:28px;}
+  header .dots span{width:12px;height:12px;border-radius:50%;background:var(--red);display:inline-block;}
+  header h1{font-family:Cambria,Georgia,serif;font-size:34px;margin:0 0 8px;max-width:700px;}
+  header p{font-size:15px;color:#CADCE8;margin:0;}
+  main{max-width:1200px;margin:0 auto;padding:32px 40px 60px;}
+  section{margin-bottom:44px;}
+  h2{font-family:Cambria,Georgia,serif;font-size:22px;color:var(--navy);margin:0 0 18px;}
+  h3{font-size:14px;font-weight:bold;color:var(--text-dark);margin:0 0 10px;}
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:8px;}
+  .kpi-card{background:var(--card);border-radius:10px;padding:16px 18px;}
+  .kpi-card .label{font-size:12px;color:var(--text-muted);margin-bottom:6px;}
+  .kpi-card .value{font-size:24px;font-weight:bold;color:var(--text-dark);}
+  .chart-card{background:#fff;border:0.5px solid var(--border);border-radius:10px;padding:18px 20px;}
+  .chart-wrap{position:relative;width:100%;}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .split{display:grid;grid-template-columns:1.5fr 1fr;gap:20px;}
+  .insight-box{background:var(--card);border-radius:10px;padding:20px 22px;}
+  .insight-box h3{font-family:Cambria,Georgia,serif;font-size:17px;color:var(--navy);margin-bottom:16px;}
+  .insight-box ul{margin:0;padding-left:18px;}
+  .insight-box li{font-size:13.5px;line-height:1.6;margin-bottom:12px;color:var(--text-dark);}
+  .alert-box{background:var(--alert-bg);border:0.5px solid var(--alert-border);border-radius:10px;padding:18px 20px;margin-bottom:20px;}
+  .alert-box .tag{display:inline-block;font-size:11px;font-weight:bold;color:#A32D2D;background:#F7C1C1;padding:3px 10px;border-radius:20px;margin-bottom:10px;}
+  .alert-box p{font-size:13.5px;line-height:1.6;margin:0;color:var(--text-dark);}
+  .caption{font-size:12px;font-style:italic;color:var(--text-muted);margin-top:10px;}
+  .legend{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:10px;font-size:12px;color:var(--text-muted);}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend i{width:10px;height:10px;border-radius:2px;display:inline-block;}
+  footer{text-align:center;padding:24px;font-size:12px;color:var(--text-muted);}
+  .ad-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;}
+  .ad-card{background:#fff;border:0.5px solid var(--border);border-radius:10px;padding:10px 10px 12px;display:flex;flex-direction:column;max-width:180px;}
+  .ad-thumb{width:100%;aspect-ratio:9/12;border-radius:8px;background:#E9ECEF;display:flex;align-items:center;justify-content:center;margin-bottom:8px;position:relative;overflow:hidden;}
+  .ad-thumb img{width:100%;height:100%;object-fit:cover;}
+  .ad-thumb .platform-tag{position:absolute;top:8px;left:8px;background:rgba(19,42,62,0.85);color:#fff;font-size:10px;font-weight:bold;padding:3px 8px;border-radius:20px;letter-spacing:0.3px;}
+  .ad-caption{font-size:11px;color:var(--text-dark);line-height:1.4;margin-bottom:8px;min-height:30px;}
+  .ad-stats{display:flex;gap:8px;flex-wrap:wrap;}
+  .ad-stat{background:var(--card);border-radius:6px;padding:6px 10px;flex:1;min-width:80px;}
+  .ad-stat .label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;}
+  .ad-stat .value{font-size:15px;font-weight:bold;color:var(--navy);}
+  .ad-stat.highlight{background:#FDECEA;}
+  .ad-stat.highlight .value{color:var(--red);}
+  .campaign-table{width:100%;border-collapse:collapse;}
+  .campaign-table th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:0.3px;color:var(--text-muted);padding:8px 12px;border-bottom:1px solid var(--border);}
+  .campaign-table td{padding:12px;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--text-dark);}
+  .campaign-table tr:last-child td{border-bottom:none;}
+  .obj-badge{display:inline-block;font-size:10.5px;font-weight:bold;padding:3px 10px;border-radius:20px;letter-spacing:0.2px;}
+  .obj-badge.whatsapp{background:#DCEFE7;color:#1BAF7A;}
+  .obj-badge.formulario{background:#FDECEA;color:#E15241;}
+  .obj-badge.reconocimiento{background:#E8ECF0;color:#132A3E;}
+  .obj-badge.otro{background:#F1F3F5;color:var(--text-muted);}
+  .obj-badge.llamadas{background:#FDF3D7;color:#B07A00;}
+  .proj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;}
+  .proj-card{background:#fff;border:0.5px solid var(--border);border-radius:10px;padding:18px 20px;border-top:4px solid var(--navy);}
+  .proj-card:nth-child(2){border-top-color:var(--red);}
+  .proj-card:nth-child(3){border-top-color:var(--green);}
+  .proj-card h3{font-family:Cambria,Georgia,serif;font-size:18px;color:var(--navy);margin-bottom:14px;}
+  .proj-card .kpi-grid{grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;}
+  .proj-card .kpi-card .value{font-size:19px;}
+  @media (max-width:800px){.two-col,.split{grid-template-columns:1fr;}header{padding:32px 20px;}main{padding:24px 20px 40px;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">Quattro Marketing</div>
+  <div class="dots"><span></span><span></span><span></span><span></span></div>
+  <h1>Dashboard de resultados de marketing digital</h1>
+  <p>UL Baja — 2026</p>
+</header>
+
+<main>
+
+  <section>
+    <h2>Resumen ejecutivo</h2>
+    <p class="caption" style="margin-top:-10px;">Datos de octubre 2026.</p>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="label">Alcance</div><div class="value">65,272</div></div>
+      <div class="kpi-card"><div class="label">Costo</div><div class="value">$28,849.00 MXN</div></div>
+      <div class="kpi-card"><div class="label">Whatsapps</div><div class="value">140</div></div>
+      <div class="kpi-card"><div class="label">Formularios</div><div class="value">90</div></div>
+      
+      <div class="kpi-card"><div class="label">Costo x Whatsapp</div><div class="value">$79.39</div></div>
+      <div class="kpi-card"><div class="label">Costo x Formulario</div><div class="value">$131.34</div></div>
+      
+      <div class="kpi-card"><div class="label">Alcance reconocimiento</div><div class="value">13,282</div></div>
+      <div class="kpi-card"><div class="label">Costo x 1,000 personas</div><div class="value">$445.26</div></div>
+      <div class="kpi-card"><div class="label">Frecuencia prom.</div><div class="value">2.0</div></div>
+    </div>
+    <p class="caption">Total de la cuenta (The Park + Torre Corporativa Eugenia + Hi TJ). Los costos por resultado se calculan con el gasto de las campañas de cada objetivo (whatsapp, formulario o reconocimiento), no con el gasto total de la cuenta.</p>
+  </section>
+
+  
+  <section>
+    <h2>Resultados por proyecto</h2>
+    <p class="caption" style="margin-top:-8px;margin-bottom:16px;">Cada proyecto con sus propias campañas en octubre 2026.</p>
+    <div class="proj-grid">
+      
+      <div class="proj-card">
+        <h3>The Park</h3>
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="label">Inversión</div><div class="value">$10,421.00 MXN</div></div>
+          <div class="kpi-card"><div class="label">Alcance</div><div class="value">24,343</div></div>
+          <div class="kpi-card"><div class="label">Whatsapps</div><div class="value">70</div></div>
+          <div class="kpi-card"><div class="label">Formularios</div><div class="value">45</div></div>
+          
+          <div class="kpi-card"><div class="label">Costo x Whatsapp</div><div class="value">$74.39</div></div>
+          <div class="kpi-card"><div class="label">Costo x Formulario</div><div class="value">$115.87</div></div>
+          
+          
+          <div class="kpi-card"><div class="label">Frecuencia</div><div class="value">2.0</div></div>
+        </div>
+      </div>
+      
+      <div class="proj-card">
+        <h3>Torre Corporativa Eugenia</h3>
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="label">Inversión</div><div class="value">$11,821.00 MXN</div></div>
+          <div class="kpi-card"><div class="label">Alcance</div><div class="value">26,553</div></div>
+          <div class="kpi-card"><div class="label">Whatsapps</div><div class="value">70</div></div>
+          
+          
+          <div class="kpi-card"><div class="label">Costo x Whatsapp</div><div class="value">$84.39</div></div>
+          
+          
+          <div class="kpi-card"><div class="label">Alcance reconocimiento</div><div class="value">13,282</div></div>
+          <div class="kpi-card"><div class="label">Costo x 1,000 personas</div><div class="value">$445.26</div></div>
+          <div class="kpi-card"><div class="label">Frecuencia</div><div class="value">2.0</div></div>
+        </div>
+      </div>
+      
+      <div class="proj-card">
+        <h3>Hi TJ</h3>
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="label">Inversión</div><div class="value">$6,607.00 MXN</div></div>
+          <div class="kpi-card"><div class="label">Alcance</div><div class="value">14,376</div></div>
+          
+          <div class="kpi-card"><div class="label">Formularios</div><div class="value">45</div></div>
+          
+          
+          <div class="kpi-card"><div class="label">Costo x Formulario</div><div class="value">$146.82</div></div>
+          
+          
+          <div class="kpi-card"><div class="label">Frecuencia</div><div class="value">2.0</div></div>
+        </div>
+      </div>
+      
+    </div>
+  </section>
+  
+
+  
+
+  
+  <section>
+    <h2>Resultados por campaña</h2>
+    <p class="caption" style="margin-top:-8px;margin-bottom:16px;">KPI individual de cada campaña en octubre 2026, ordenadas por gasto. En las de reconocimiento el resultado son las personas alcanzadas y el costo es por cada 1,000 personas.</p>
+    <div class="chart-card" style="overflow-x:auto;">
+      <table class="campaign-table">
+        <thead>
+          <tr>
+            <th>Campaña</th>
+            <th>Proyecto</th>
+            <th>Objetivo</th>
+            <th>Alcance</th>
+            <th>Gasto</th>
+            <th>Resultados</th>
+            <th>Costo x resultado</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr>
+            <td>Hi TJ Formulario</td>
+            <td>Hi TJ</td>
+            <td><span class="obj-badge formulario">Formulario</span></td>
+            <td>14,376</td>
+            <td>$6,607.00 MXN</td>
+            <td>45</td>
+            <td>$146.82</td>
+          </tr>
+          
+          <tr>
+            <td>Eugenia Reconocimiento</td>
+            <td>Torre Corporativa Eugenia</td>
+            <td><span class="obj-badge reconocimiento">Reconocimiento</span></td>
+            <td>13,282</td>
+            <td>$5,914.00 MXN</td>
+            <td>13,282 pers.</td>
+            <td>$445.26 x 1,000 pers.</td>
+          </tr>
+          
+          <tr>
+            <td>Torre Corporativa Eugenia Whatsapp</td>
+            <td>Torre Corporativa Eugenia</td>
+            <td><span class="obj-badge whatsapp">Whatsapp</span></td>
+            <td>13,271</td>
+            <td>$5,907.00 MXN</td>
+            <td>70</td>
+            <td>$84.39</td>
+          </tr>
+          
+          <tr>
+            <td>The Park Formulario</td>
+            <td>The Park</td>
+            <td><span class="obj-badge formulario">Formulario</span></td>
+            <td>12,177</td>
+            <td>$5,214.00 MXN</td>
+            <td>45</td>
+            <td>$115.87</td>
+          </tr>
+          
+          <tr>
+            <td>The Park Whatsapp</td>
+            <td>The Park</td>
+            <td><span class="obj-badge whatsapp">Whatsapp</span></td>
+            <td>12,166</td>
+            <td>$5,207.00 MXN</td>
+            <td>70</td>
+            <td>$74.39</td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  </section>
+  
+
+  <section>
+    <h2>Histórico 2026</h2>
+    <div class="chart-card">
+      <h3>Alcance mensual (personas)</h3>
+      <div class="legend"><span><i style="background:#E15241"></i>Alcance</span></div>
+      <div class="chart-wrap" style="height:280px;"><canvas id="reachChart"></canvas></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Inversión y generación de resultados</h2>
+    <div class="two-col">
+      <div class="chart-card">
+        <h3>Costo total vs frecuencia</h3>
+        <div class="legend">
+          <span><i style="background:#132A3E"></i>Costo (MXN)</span>
+          <span><i style="background:#E15241"></i>Frecuencia</span>
+        </div>
+        <div class="chart-wrap" style="height:280px;"><canvas id="costFreqChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Whatsapps, formularios y llamadas</h3>
+        <div class="legend">
+          <span><i style="background:#132A3E"></i>Whatsapps</span>
+          <span><i style="background:#E15241"></i>Formularios</span>
+          
+        </div>
+        <div class="chart-wrap" style="height:280px;"><canvas id="leadsChart"></canvas></div>
+      </div>
+    </div>
+    
+    <div class="chart-card" style="margin-top:20px;">
+      <h3>Resultados por proyecto (whatsapps + formularios)</h3>
+      <div class="legend">
+        <span><i style="background:#132A3E"></i>The Park</span><span><i style="background:#E15241"></i>Torre Corporativa Eugenia</span><span><i style="background:#1BAF7A"></i>Hi TJ</span>
+      </div>
+      <div class="chart-wrap" style="height:280px;"><canvas id="projChart"></canvas></div>
+    </div>
+    
+  </section>
+
+  
+  <section>
+    <h2>Top anuncio por campaña</h2>
+    <p class="caption" style="margin-top:-8px;margin-bottom:16px;">El anuncio con mejor resultado de cada campaña en octubre 2026, rankeado segun el objetivo de esa campaña (whatsapp, formulario o alcance). Se agrupan por proyecto.</p>
+    
+    <h3 style="margin-top:20px;margin-bottom:10px;">The Park</h3>
+    <div class="ad-grid">
+      
+      <div class="ad-card">
+        <div class="ad-thumb">
+          <span class="platform-tag">PHOTO</span>
+          <img src="data:image/png;base64,iVBOR2Zha2U=" alt="Creativo del anuncio">
+        </div>
+        <div class="ad-caption">Texto del anuncio 1012</div>
+        <div class="ad-stats">
+          
+          <div class="ad-stat highlight"><div class="label">Whatsapps</div><div class="value">35</div></div>
+          
+          <div class="ad-stat"><div class="label">Alcance</div><div class="value">6,083</div></div>
+        </div>
+      </div>
+      
+      <div class="ad-card">
+        <div class="ad-thumb">
+          <span class="platform-tag">PHOTO</span>
+          <img src="data:image/png;base64,iVBOR2Zha2U=" alt="Creativo del anuncio">
+        </div>
+        <div class="ad-caption">Texto del anuncio 1011</div>
+        <div class="ad-stats">
+          
+          <div class="ad-stat highlight"><div class="label">Whatsapps</div><div class="value">23</div></div>
+          
+          <div class="ad-stat"><div class="label">Alcance</div><div class="value">4,055</div></div>
+        </div>
+      </div>
+      
+      <div class="ad-card">
+        <div class="ad-thumb">
+          <span class="platform-tag">VIDEO</span>
+          <img src="data:image/png;base64,iVBOR2Zha2U=" alt="Creativo del anuncio">
+        </div>
+        <div class="ad-caption">Texto del anuncio 1010</div>
+        <div class="ad-stats">
+          
+          <div class="ad-stat highlight"><div class="label">Whatsapps</div><div class="value">11</div></div>
+          
+          <div class="ad-stat"><div class="label">Alcance</div><div class="value">2,027</div></div>
+        </div>
+      </div>
+      
+      <div class="ad-card">
+        <div class="ad-thumb">
+          <span class="platform-tag">PHOTO</span>
+          <img src="data:image/png;base64,iVBOR2Zha2U=" alt="Creativo del anuncio">
+        </div>
+        <div class="ad-caption">Texto del anuncio 1022</div>
+        <div class="ad-stats">
+          
+          <div class="ad-stat highlight"><div class="label">Formularios</div><div class="value">22</div></div>
+          
+          <div class="ad-stat"><div class="label">Alcance</div><div class="value">6,088</div></div>
+        </div>
+      </div>
+      
+      <div class="ad-card">
+        <div class="ad-thumb">
+          <span class="platform-tag">PHOTO</span>
+          <img src="data:image/png;base64,iVBOR2Zha2U=" alt="Creativo del anuncio">
+        </div>
+        <div class="ad-caption">Texto del anuncio 1021</div>
+        <div class="ad-stats">
+          
+          <div class="ad-stat highlight"><div class="label">Formularios</div><div class="value">15</div></div>
+          
+          <div class="ad-stat"><div class="label">Alcance</div><div class="value">4,059</div></div>
+        </div>
+      </div>
+      
+      <div class="ad-card">
+        <div class="ad-thumb">
+          <span class="platform-tag">VIDEO</span>
+          <img src="data:image/png;base64,iVBOR2Zha2U=" alt="Creativo del anuncio">
+        </div>
+        <div class="ad-caption">Texto del anuncio 1020</div>
+        <div class="ad-stats">
+          
+          <div class="ad-stat highlight"><div class="label">Formularios</div><div class="value">7</div></div>
+          
+          <div class="ad-stat"><div class="label">Alcance</div><div class="value">2,029</div></div>
+        </div>
+      </div>
+      
+    </div>
+    
+    <h3 style="margin-top:20px;margin-bottom:10px;">Torre Corporativa Eugenia</h3>
+    <div class="ad-grid">
+      
+      <div class="ad-card">
+        <div class="ad-thumb">
+          <span class="platform-tag">PHOTO</span>
+          <img src="data:image/png;base64,iVBOR2Zha2U=" alt="Creativo del anuncio">
+        </div>
+        <div class="ad-caption">Texto del anuncio 2012</div>
+        <div class="ad-stats">
+          
+          <div class="ad-stat highlight"><div class="label">Whatsapps</div><div class="value">35</div></div>
+          
+          <div class="ad-stat"><div class="label">Alcance</div><div class="value">6,635</div></div>
+        </div>
+      </div>
+      
+      <div class="ad-card">
+        <div class="ad-thumb">
+          <span class="platform-tag">PHOTO</span>
+          <img src="data:image/png;base64,iVBOR2Zha2U=" alt="Creativo del anuncio">
+        </div>
+        <div class="ad-caption">Texto del anuncio 2011</div>
+        <div class="ad-stats">
+          
+          <div class="ad-stat highlight"><div class="label">Whatsapps</div><div class="value">23</div></div>
+          
+          <div class="ad-stat"><div class="label">Alcance</div><div class="value">4,423</div></div>
+        </div>
+      </div>
+      
+      <div class="ad-card">
+        <div class="ad-thumb">
+          <span class="platform-tag">VIDEO</span>
+          <img src="data:image/png;base64,iVBOR2Zha2U=" alt="Creativo del anuncio">
+        </div>
+        <div class="ad-caption">Texto del anuncio 2010</div>
+        <div class="ad-stats">
+          
+          <div class="ad-stat highlight"><div class="label">Whatsapps</div><div class="value">11</div></div>
+          
+          <div class="ad-stat"><div class="label">Alcance</div><div class="value">2,211</div></div>
+        </div>
+      </div>
+      
+      <div class="ad-card">
+        <div class="ad-thumb">
+          <span class="platform-tag">PHOTO</span>
+          <img src="data:image/png;base64,iVBOR2Zha2U=" alt="Creativo del anuncio">
+        </div>
+        <div class="ad-caption">Texto del anuncio 2022</div>
+        <div class="ad-stats">
+          
+          <div class="ad-stat"><div class="label">Alcance</div><div class="value">6,641</div></div>
+        </div>
+      </div>
+      
+      <div class="ad-card">
+        <div class="ad-thumb">
+          <span class="platform-tag">PHOTO</span>
+          <img src="data:image/png;base64,iVBOR2Zha2U=" alt="Creativo del anuncio">
+        </div>
+        <div class="ad-caption">Texto del anuncio 2021</div>
+        <div class="ad-stats">
+          
+          <div class="ad-stat"><div class="label">Alcance</div><div class="value">4,427</div></div>
+        </div>
+      </div>
+      
+      <div class="ad-card">
+        <div class="ad-thumb">
+          <span class="platform-tag">VIDEO</span>
+          <img src="data:image/png;base64,iVBOR2Zha2U=" alt="Creativo del anuncio">
+        </div>
+        <div class="ad-caption">Texto del anuncio 2020</div>
+        <div class="ad-stats">
+          
+          <div class="ad-stat"><div class="label">Alcance</div><div class="value">2,213</div></div>
+        </div>
+      </div>
+      
+    </div>
+    
+    <h3 style="margin-top:20px;margin-bottom:10px;">Hi TJ</h3>
+    <div class="ad-grid">
+      
+      <div class="ad-card">
+        <div class="ad-thumb">
+          <span class="platform-tag">PHOTO</span>
+          <img src="data:image/png;base64,iVBOR2Zha2U=" alt="Creativo del anuncio">
+        </div>
+        <div class="ad-caption">Texto del anuncio 3012</div>
+        <div class="ad-stats">
+          
+          <div class="ad-stat highlight"><div class="label">Formularios</div><div class="value">22</div></div>
+          
+          <div class="ad-stat"><div class="label">Alcance</div><div class="value">7,188</div></div>
+        </div>
+      </div>
+      
+      <div class="ad-card">
+        <div class="ad-thumb">
+          <span class="platform-tag">PHOTO</span>
+          <img src="data:image/png;base64,iVBOR2Zha2U=" alt="Creativo del anuncio">
+        </div>
+        <div class="ad-caption">Texto del anuncio 3011</div>
+        <div class="ad-stats">
+          
+          <div class="ad-stat highlight"><div class="label">Formularios</div><div class="value">15</div></div>
+          
+          <div class="ad-stat"><div class="label">Alcance</div><div class="value">4,792</div></div>
+        </div>
+      </div>
+      
+      <div class="ad-card">
+        <div class="ad-thumb">
+          <span class="platform-tag">VIDEO</span>
+          <img src="data:image/png;base64,iVBOR2Zha2U=" alt="Creativo del anuncio">
+        </div>
+        <div class="ad-caption">Texto del anuncio 3010</div>
+        <div class="ad-stats">
+          
+          <div class="ad-stat highlight"><div class="label">Formularios</div><div class="value">7</div></div>
+          
+          <div class="ad-stat"><div class="label">Alcance</div><div class="value">2,396</div></div>
+        </div>
+      </div>
+      
+    </div>
+    
+  </section>
+  
+
+  <section>
+    <h2>Insights clave</h2>
+    <div class="insight-box">
+      <h3>Lecturas del mes</h3>
+      <ul>
+        
+        <li>El alcance bajó 13.5% contra el mes anterior (75,420 → 65,272 personas).</li>
+        
+        <li>Los resultados (whatsapps + formularios) aumentaron 4.5% contra el mes anterior (220 → 230).</li>
+        
+        <li>El costo promedio por resultado fue de $99.72 MXN, 1.8% más barato que el mes anterior ($101.52 MXN).</li>
+        
+        <li>The Park: invirtió $10,421.00 MXN y generó 70 whatsapps (a $74.39 c/u), 45 formularios (a $115.87 c/u).</li>
+        
+        <li>Torre Corporativa Eugenia: invirtió $11,821.00 MXN y generó 70 whatsapps (a $84.39 c/u), 13,282 personas con reconocimiento (a $445.26 por cada 1,000).</li>
+        
+        <li>Hi TJ: invirtió $6,607.00 MXN y generó 45 formularios (a $146.82 c/u).</li>
+        
+        <li>The Park concentró el 50% de los resultados del mes.</li>
+        
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+
+<div style="text-align:center;margin-bottom:20px;">
+  <a href="archivo/index.html" style="color:var(--red);font-size:13px;text-decoration:none;">Ver reportes de meses anteriores →</a>
+</div>
+
+<footer>Quattro Marketing — generado automaticamente el 07/11/2026</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const months = ["Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct"];
+const muted = '#63707D';
+const grid = '#E2E8F0';
+const NAVY = '#132A3E';
+const RED = '#E15241';
+
+const reach = [19583, 20263, 32514, 46550, 60172, 61872, 75420, 65272];
+const cost = [8321.0, 8621.0, 14078.0, 20535.0, 26599.0, 27349.0, 33170.0, 28849.0];
+const freq = [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0];
+const wa = [49, 52, 110, 116, 122, 128, 134, 140];
+const form = [31, 33, 35, 74, 78, 82, 86, 90];
+const calls = [0, 0, 0, 0, 0, 0, 0, 0];
+
+Chart.defaults.font.family = "Calibri, 'Segoe UI', Arial, sans-serif";
+
+new Chart(document.getElementById('reachChart'), {
+  type: 'line',
+  data: { labels: months, datasets: [{ label:'Alcance', data:reach, borderColor:RED, backgroundColor:'rgba(225,82,65,0.08)', fill:true, tension:0.3, borderWidth:3, pointRadius:4, pointBackgroundColor:RED }]},
+  options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+    scales:{ y:{grid:{color:grid},ticks:{color:muted,callback:v=>v.toLocaleString()}}, x:{grid:{display:false},ticks:{color:muted}} } }
+});
+
+new Chart(document.getElementById('costFreqChart'), {
+  data: { labels:months, datasets:[
+    {type:'bar',label:'Costo',data:cost,backgroundColor:NAVY,borderRadius:4,yAxisID:'y'},
+    {type:'line',label:'Frecuencia',data:freq,borderColor:RED,backgroundColor:RED,borderWidth:3,tension:0.3,pointRadius:4,yAxisID:'y1'}
+  ]},
+  options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+    scales:{ y:{position:'left',grid:{color:grid},ticks:{color:muted,callback:v=>'$'+v.toLocaleString()}}, y1:{position:'right',grid:{display:false},ticks:{color:muted}}, x:{grid:{display:false},ticks:{color:muted}} } }
+});
+
+new Chart(document.getElementById('leadsChart'), {
+  type:'bar',
+  data:{ labels:months, datasets:[
+    {label:'Whatsapps',data:wa,backgroundColor:NAVY,borderRadius:4},
+    {label:'Formularios',data:form,backgroundColor:RED,borderRadius:4}
+  ].concat(calls.some(v=>v>0) ? [{label:'Llamadas',data:calls,backgroundColor:'#EDA100',borderRadius:4}] : [])},
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+    scales:{ y:{grid:{color:grid},ticks:{color:muted}}, x:{grid:{display:false},ticks:{color:muted}} } }
+});
+
+const projSeries = [{"label": "The Park", "data": [80, 85, 90, 95, 100, 105, 110, 115], "backgroundColor": "#132A3E", "borderRadius": 4}, {"label": "Torre Corporativa Eugenia", "data": [0, 0, 55, 58, 61, 64, 67, 70], "backgroundColor": "#E15241", "borderRadius": 4}, {"label": "Hi TJ", "data": [0, 0, 0, 37, 39, 41, 43, 45], "backgroundColor": "#1BAF7A", "borderRadius": 4}];
+if (document.getElementById('projChart')) {
+  new Chart(document.getElementById('projChart'), {
+    type:'bar',
+    data:{ labels:months, datasets:projSeries },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ y:{grid:{color:grid},ticks:{color:muted}}, x:{grid:{display:false},ticks:{color:muted}} } }
+  });
+}
+</script>
+
+</body>
+</html>

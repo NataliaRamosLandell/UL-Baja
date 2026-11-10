@@ -645,14 +645,14 @@ def build_insights(current, previous):
         insights.append(f"El alcance {'subió' if p >= 0 else 'bajó'} {abs(p)}% contra el mes anterior "
                         f"({r_prev:,} → {r_cur:,} personas).")
     elif r_cur:
-        insights.append(f"Se alcanzaron {r_cur:,} personas este mes (no hay mes anterior para comparar).")
+        insights.append(f"Se alcanzaron (semana) {r_cur:,} personas este mes (no hay mes anterior para comparar).")
 
     if res_prev and res_cur:
         p = pct_change(res_prev, res_cur)
         insights.append(f"Los resultados (whatsapps + formularios) {'aumentaron' if p >= 0 else 'bajaron'} "
                         f"{abs(p)}% contra el mes anterior ({res_prev} → {res_cur}).")
     elif res_cur:
-        insights.append(f"Se generaron {res_cur} resultados (whatsapps + formularios) este mes.")
+        insights.append(f"Se generaron (semana) {res_cur} resultados (whatsapps + formularios) este mes.")
 
     if res_cur and sp_res_cur:
         cpr = sp_res_cur / res_cur
@@ -874,11 +874,18 @@ def main():
 
     print(f"Jalando datos de {', '.join(account_ids)}...")
 
-    # El resumen siempre es del ultimo mes COMPLETO.
-    last_end = until_date.replace(day=1) - timedelta(days=1)
-    kpi_start = last_end.replace(day=1).strftime("%Y-%m-%d")
-    kpi_until = last_end.strftime("%Y-%m-%d")
-    label = f"{MESES[last_end.month - 1]} {last_end.year}"
+    # El resumen es de la ultima SEMANA COMPLETA (lunes a domingo).
+    # Encuentra el domingo pasado
+    days_since_sunday = (until_date.weekday() + 1) % 7  # 0=lunes, 6=domingo
+    if days_since_sunday == 0:  # Si hoy es domingo
+        last_sunday = until_date
+    else:
+        last_sunday = until_date - timedelta(days=days_since_sunday)
+    # La semana completa es lunes-domingo de la semana anterior
+    last_monday = last_sunday - timedelta(days=6)
+    kpi_start = last_monday.strftime("%Y-%m-%d")
+    kpi_until = last_sunday.strftime("%Y-%m-%d")
+    label = f"{last_monday.strftime('%d/%m')} al {last_sunday.strftime('%d/%m/%Y')}"
 
     # Rellenar meses anteriores (solo los que faltan en archivo/ y que tienen datos).
     backfill_from = config.get("backfill_from")

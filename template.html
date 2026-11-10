@@ -96,7 +96,7 @@
 
   <section>
     <h2>Resumen ejecutivo</h2>
-    <p class="caption" style="margin-top:-10px;">Datos de {{ kpi_period_label }}.</p>
+    <p class="caption" style="margin-top:-10px;">Datos de la semana {{ kpi_period_label }}.</p>
     <div class="kpi-grid">
       <div class="kpi-card"><div class="label">Alcance</div><div class="value">{{ kpi_reach }}</div></div>
       <div class="kpi-card"><div class="label">Costo</div><div class="value">{{ kpi_spend }}</div></div>
@@ -116,7 +116,7 @@
   {% if show_projects %}
   <section>
     <h2>Resultados por proyecto</h2>
-    <p class="caption" style="margin-top:-8px;margin-bottom:16px;">Cada proyecto con sus propias campañas en {{ kpi_period_label }}.</p>
+    <p class="caption" style="margin-top:-8px;margin-bottom:16px;">Cada proyecto con sus propias campañas en la semana {{ kpi_period_label }}.</p>
     <div class="proj-grid">
       {% for p in projects %}
       <div class="proj-card">
@@ -150,7 +150,7 @@
   {% if campaigns_breakdown %}
   <section>
     <h2>Resultados por campaña</h2>
-    <p class="caption" style="margin-top:-8px;margin-bottom:16px;">KPI individual de cada campaña en {{ kpi_period_label }}, ordenadas por gasto. En las de reconocimiento el resultado son las personas alcanzadas y el costo es por cada 1,000 personas.</p>
+    <p class="caption" style="margin-top:-8px;margin-bottom:16px;">KPI individual de cada campaña en la semana {{ kpi_period_label }}, ordenadas por gasto. En las de reconocimiento el resultado son las personas alcanzadas y el costo es por cada 1,000 personas.</p>
     <div class="chart-card" style="overflow-x:auto;">
       <table class="campaign-table">
         <thead>
@@ -192,16 +192,9 @@
   </section>
 
   <section>
-    <h2>Inversión y generación de resultados</h2>
-    <div class="two-col">
-      <div class="chart-card">
-        <h3>Costo total vs frecuencia</h3>
-        <div class="legend">
-          <span><i style="background:#132A3E"></i>Costo (MXN)</span>
-          <span><i style="background:#E15241"></i>Frecuencia</span>
-        </div>
-        <div class="chart-wrap" style="height:280px;"><canvas id="costFreqChart"></canvas></div>
-      </div>
+    <h2>Histórico mensual y resultados semanales</h2>
+    <div>
+</div>
       <div class="chart-card">
         <h3>Whatsapps, formularios y llamadas</h3>
         <div class="legend">
@@ -226,7 +219,7 @@
   {% if top_ads_by_campaign %}
   <section>
     <h2>Top anuncio por campaña</h2>
-    <p class="caption" style="margin-top:-8px;margin-bottom:16px;">El anuncio con mejor resultado de cada campaña en {{ kpi_period_label }}, rankeado segun el objetivo de esa campaña (whatsapp, formulario o alcance). Se agrupan por proyecto.</p>
+    <p class="caption" style="margin-top:-8px;margin-bottom:16px;">El anuncio con mejor resultado de cada campaña en la semana {{ kpi_period_label }}, rankeado segun el objetivo de esa campaña (whatsapp, formulario o alcance). Se agrupan por proyecto.</p>
     {% for camp in top_ads_by_campaign %}
     <h3 style="margin-top:20px;margin-bottom:10px;">{{ camp.campaign_name }}</h3>
     <div class="ad-grid">

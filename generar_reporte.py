@@ -911,14 +911,12 @@ def main():
     # backfill: siempre genero meses hasta octubre, luego noviembre+ se generan semanales en main()
     
     if until_date.month >= 11:
-        # Última semana completa (lunes a domingo) del mes anterior
-        # Si estamos en dic/ene/etc, queremos la última semana completa de NOV/DIC/etc (mes anterior)
-        last_day_prev_month = until_date.replace(day=1) - timedelta(days=1)
-        days_since_sunday = (last_day_prev_month.weekday() + 1) % 7
-        if days_since_sunday == 0:
-            last_sunday = last_day_prev_month
+        # Última semana completa (lunes a domingo) de este mes/año
+        days_since_sunday = (until_date.weekday() + 1) % 7  # 0=domingo, 1=lunes, ..., 6=sábado
+        if days_since_sunday == 0:  # Si hoy es domingo
+            last_sunday = until_date
         else:
-            last_sunday = last_day_prev_month - timedelta(days=days_since_sunday)
+            last_sunday = until_date - timedelta(days=days_since_sunday)
         last_monday = last_sunday - timedelta(days=6)
         kpi_start = last_monday.strftime("%Y-%m-%d")
         kpi_until = last_sunday.strftime("%Y-%m-%d")

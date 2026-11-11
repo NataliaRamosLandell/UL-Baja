@@ -706,14 +706,25 @@ def fix_archive_links(archive_dir):
 def build_archive_index(archive_dir, client_name, main_filename):
     archivos = sorted((f for f in archive_dir.glob("*.html")
                        if f.name != "index.html" and not f.name.startswith("_")), reverse=True)
-    filas = []
+    
+    # Separar en semanal (nov+) y mensual (ene-oct)
+    semanal = []
+    mensual = []
     for f in archivos:
         try:
             year, month = f.stem.split("-")
-            label = f"{MESES[int(month) - 1].capitalize()} {year}"
+            month_int = int(month)
+            label = f"{MESES[month_int - 1].capitalize()} {year}"
+            if month_int >= 11:
+                semanal.append(f'<li><a href="{f.name}">{label}</a></li>')
+            else:
+                mensual.append(f'<li><a href="{f.name}">{label}</a></li>')
         except (ValueError, IndexError):
             label = f.stem
-        filas.append(f'<li><a href="{f.name}">{label}</a></li>')
+            mensual.append(f'<li><a href="{f.name}">{label}</a></li>')
+
+    semanal_html = "".join(semanal) if semanal else "<li>Sin reportes semanales aún.</li>"
+    mensual_html = "".join(mensual) if mensual else "<li>Sin reportes mensuales.</li>"
 
     html = f"""<!DOCTYPE html>
 <html lang="es">
@@ -724,6 +735,8 @@ def build_archive_index(archive_dir, client_name, main_filename):
 <style>
   body{{font-family:Calibri,Arial,sans-serif;background:#FAFAF8;color:#1B2A3B;max-width:600px;margin:60px auto;padding:0 20px;}}
   h1{{font-size:22px;}}
+  h2{{font-size:16px;color:#132A3E;margin-top:30px;margin-bottom:12px;}}
+  h2:first-of-type{{margin-top:0;}}
   ul{{list-style:none;padding:0;}}
   li{{margin-bottom:10px;}}
   a{{color:#E15241;font-size:16px;text-decoration:none;}}
@@ -733,8 +746,13 @@ def build_archive_index(archive_dir, client_name, main_filename):
 </head>
 <body>
   <h1>Historial de reportes — {client_name}</h1>
+  <h2>Reportes semanales</h2>
   <ul>
-    {"".join(filas) if filas else "<li>Aún no hay reportes archivados.</li>"}
+    {semanal_html}
+  </ul>
+  <h2>Reportes mensuales anteriores</h2>
+  <ul>
+    {mensual_html}
   </ul>
   <a class="back" href="../{main_filename}">← Volver al reporte más reciente</a>
 </body>
@@ -874,18 +892,24 @@ def main():
 
     print(f"Jalando datos de {', '.join(account_ids)}...")
 
-    # El resumen es de la ultima SEMANA COMPLETA (lunes a domingo).
-    # Encuentra el domingo pasado
-    days_since_sunday = (until_date.weekday() + 1) % 7  # 0=lunes, 6=domingo
-    if days_since_sunday == 0:  # Si hoy es domingo
-        last_sunday = until_date
+    # A partir de noviembre: semana completa. Antes: mes completo.
+    if until_date.month >= 11:
+        # Semana completa (lunes a domingo)
+        days_since_sunday = (until_date.weekday() + 1) % 7
+        if days_since_sunday == 0:
+            last_sunday = until_date
+        else:
+            last_sunday = until_date - timedelta(days=days_since_sunday)
+        last_monday = last_sunday - timedelta(days=6)
+        kpi_start = last_monday.strftime("%Y-%m-%d")
+        kpi_until = last_sunday.strftime("%Y-%m-%d")
+        label = f"{last_monday.strftime('%d/%m')} al {last_sunday.strftime('%d/%m/%Y')}"
     else:
-        last_sunday = until_date - timedelta(days=days_since_sunday)
-    # La semana completa es lunes-domingo de la semana anterior
-    last_monday = last_sunday - timedelta(days=6)
-    kpi_start = last_monday.strftime("%Y-%m-%d")
-    kpi_until = last_sunday.strftime("%Y-%m-%d")
-    label = f"{last_monday.strftime('%d/%m')} al {last_sunday.strftime('%d/%m/%Y')}"
+        # Mes completo (enero-octubre)
+        last_end = until_date.replace(day=1) - timedelta(days=1)
+        kpi_start = last_end.replace(day=1).strftime("%Y-%m-%d")
+        kpi_until = last_end.strftime("%Y-%m-%d")
+        label = f"{MESES[last_end.month - 1]} {last_end.year}"
 
     # Rellenar meses anteriores (solo los que faltan en archivo/ y que tienen datos).
     backfill_from = config.get("backfill_from")

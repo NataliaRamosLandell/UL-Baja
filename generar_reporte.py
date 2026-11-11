@@ -712,12 +712,18 @@ def build_archive_index(archive_dir, client_name, main_filename):
     mensual = []
     for f in archivos:
         try:
-            year, month = f.stem.split("-")
-            month_int = int(month)
-            label = f"{MESES[month_int - 1].capitalize()} {year}"
-            if month_int >= 11:
+            # Formato semanal: "2026-11-02_a_2026-11-08.html"
+            if "_a_" in f.stem:
+                start_str, end_str = f.stem.split("_a_")
+                start_d = datetime.strptime(start_str, "%Y-%m-%d").date()
+                end_d = datetime.strptime(end_str, "%Y-%m-%d").date()
+                label = f"Semana {start_d.strftime('%d/%m')} al {end_d.strftime('%d/%m/%Y')}"
                 semanal.append(f'<li><a href="{f.name}">{label}</a></li>')
             else:
+                # Formato mensual: "2026-11.html"
+                year, month = f.stem.split("-")
+                month_int = int(month)
+                label = f"{MESES[month_int - 1].capitalize()} {year}"
                 mensual.append(f'<li><a href="{f.name}">{label}</a></li>')
         except (ValueError, IndexError):
             label = f.stem
@@ -775,7 +781,7 @@ def prev_month_bounds(start_str):
 # ------------------------------------------------------------- reporte
 
 def build_report(config, token, account_ids, since, chart_until,
-                 kpi_start, kpi_until, kpi_period_label, write_main=True):
+                 kpi_start, kpi_until, kpi_period_label, write_main=True, is_weekly=None):
     """Genera el reporte de kpi_start -> kpi_until. write_main=False se usa
     al rellenar meses anteriores: solo guarda la copia en archivo/."""
     monthly = fetch_monthly_insights(config, account_ids, token, since, chart_until)
@@ -866,7 +872,15 @@ def build_report(config, token, account_ids, since, chart_until,
     if archive_url:
         archive_dir = output_dir / "archivo"
         archive_dir.mkdir(exist_ok=True, parents=True)
-        (archive_dir / f"{kpi_start[:7]}.html").write_text(html, encoding="utf-8")
+        start_date = datetime.strptime(kpi_start, "%Y-%m-%d").date()
+        end_date = datetime.strptime(kpi_until, "%Y-%m-%d").date()
+        # Si is_weekly no se especifica, lo calcula del mes
+        weekly = is_weekly if is_weekly is not None else (start_date.month >= 11)
+        if weekly:
+            filename = f"{start_date.strftime('%Y-%m-%d')}_a_{end_date.strftime('%Y-%m-%d')}.html"
+        else:
+            filename = f"{kpi_start[:7]}.html"
+        (archive_dir / filename).write_text(html, encoding="utf-8")
         fix_archive_links(archive_dir)
         build_archive_index(archive_dir, config["client_name"], main_filename)
 
@@ -892,14 +906,19 @@ def main():
 
     print(f"Jalando datos de {', '.join(account_ids)}...")
 
-    # A partir de noviembre: semana completa. Antes: mes completo.
+    # Para KPI y backfill, necesito dos cálculos distintos
+    # kpi: si noviembre+, última SEMANA completa; si antes, último MES completo
+    # backfill: siempre genero meses hasta octubre, luego noviembre+ se generan semanales en main()
+    
     if until_date.month >= 11:
-        # Semana completa (lunes a domingo)
-        days_since_sunday = (until_date.weekday() + 1) % 7
+        # Última semana completa (lunes a domingo) del mes anterior
+        # Si estamos en dic/ene/etc, queremos la última semana completa de NOV/DIC/etc (mes anterior)
+        last_day_prev_month = until_date.replace(day=1) - timedelta(days=1)
+        days_since_sunday = (last_day_prev_month.weekday() + 1) % 7
         if days_since_sunday == 0:
-            last_sunday = until_date
+            last_sunday = last_day_prev_month
         else:
-            last_sunday = until_date - timedelta(days=days_since_sunday)
+            last_sunday = last_day_prev_month - timedelta(days=days_since_sunday)
         last_monday = last_sunday - timedelta(days=6)
         kpi_start = last_monday.strftime("%Y-%m-%d")
         kpi_until = last_sunday.strftime("%Y-%m-%d")
@@ -911,7 +930,7 @@ def main():
         kpi_until = last_end.strftime("%Y-%m-%d")
         label = f"{MESES[last_end.month - 1]} {last_end.year}"
 
-    # Rellenar meses anteriores (solo los que faltan en archivo/ y que tienen datos).
+    # Rellenar meses anteriores (solo enero-octubre en archivo/)
     backfill_from = config.get("backfill_from")
     if backfill_from:
         archive_dir = Path(__file__).parent / config.get("output_dir", "docs") / "archivo"
@@ -922,7 +941,9 @@ def main():
         if force:
             print("Generando todo el historial (primera vez o cambio de version del calculo)...")
         cur = datetime.strptime(backfill_from[:7] + "-01", "%Y-%m-%d").date()
-        last_full = datetime.strptime(kpi_start, "%Y-%m-%d").date()
+        # Último mes a generar en backfill: octubre (nunca noviembre+, que se generan como semanales en main)
+        # Así que last_full siempre es el 1 de noviembre del año actual
+        last_full = date(until_date.year, 11, 1)
         while cur < last_full:
             slug = cur.strftime("%Y-%m")
             start, end = month_bounds(cur.year, cur.month)
@@ -934,7 +955,7 @@ def main():
                 print(f"Generando archivo de {slug}...")
                 build_report(config, token, account_ids, since, end.isoformat(),
                              start.isoformat(), end.isoformat(),
-                             f"{MESES[cur.month - 1]} {cur.year}", write_main=False)
+                             f"{MESES[cur.month - 1]} {cur.year}", write_main=False, is_weekly=False)
             cur = date(cur.year + (cur.month == 12), (cur.month % 12) + 1, 1)
         marker.write_text(f"<!-- backfill v{BACKFILL_VERSION} -->", encoding="utf-8")
 
